@@ -9,9 +9,11 @@ void	set_bool(pthread_mutex_t *mutex, bool *dest, bool value)
 
 bool	get_bool(pthread_mutex_t  *mutex, bool *value)
 {
+	bool	ret;
 	safe_mutex_handle(mutex, LOCK);
-	return (value);
+	ret = *value;
 	safe_mutex_handle(mutex, UNLOCK);
+	return (ret);
 }
 
 void	set_long(pthread_mutex_t *mutex, long *dest, long value)
@@ -23,9 +25,12 @@ void	set_long(pthread_mutex_t *mutex, long *dest, long value)
 
 long	get_long(pthread_mutex_t *mutex, long *value)
 {
+	long	ret;
+
 	safe_mutex_handle(mutex, LOCK);
-	return (value);
+	ret = *value;
 	safe_mutex_handle(mutex, UNLOCK);
+	return (ret);
 }
 
 bool	simulation_finished(table_t *table)

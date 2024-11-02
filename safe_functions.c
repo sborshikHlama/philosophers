@@ -25,7 +25,7 @@ static	void	handle_threads_error(int status, enum_opertaion_t opeation)
 	else if (status == EPERM)
 		error_exit("The caller does not have appropriate permission to set the required\
                         scheduling parameters or scheduling policy.");
-	else if (status == EINVAL && opeation == JOIN || opeation == DETACH)
+	else if (status == EINVAL && (opeation == JOIN || opeation == DETACH))
 		error_exit("The implementation has detected that the value specified by thread\
                         does not refer to a joinable thread.");
 	else if (status == ESRCH)
@@ -41,7 +41,7 @@ static	void	handle_mutex_error(int status, enum_opertaion_t operation)
 {
 	if (status == 0)
 		return ;
-	else if (status == 	EINVAL && (operation == LOCK
+	if (status == 	EINVAL && (operation == LOCK
 		|| operation == UNLOCK || operation == DESTROY))
 		error_exit("The value specified by mutex is invalid.");
 	else if (status == EDEADLK)
@@ -64,8 +64,9 @@ void	safe_thread_handle(pthread_t *thread, void *(*func)(void *), void * data,
 	else if (operation == JOIN)
 		handle_threads_error(pthread_join(*thread, NULL), operation);
 	else if (operation == DETACH)
-		handle_threads_error(pthread_detach(thread), operation);
-	error_exit("Error: wrong thread operation");
+		handle_threads_error(pthread_detach(*thread), operation);
+	else
+		error_exit("Error: wrong thread operation");
 }
 
 /*Using enums to handle mutex operations and possible errors at one place in programm*/

@@ -35,7 +35,8 @@ void precise_usleep(long usec, table_t *table)
 
 void	error_exit(const char	*msg)
 {
-	ft_putendl_fd((char *)msg, 1);
+	// ft_putendl_fd((char *)msg, 1);
+	printf("%s\n", msg);
 	exit(1);
 }
 
