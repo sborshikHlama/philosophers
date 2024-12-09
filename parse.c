@@ -1,27 +1,41 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/07 13:04:17 by aevstign          #+#    #+#             */
+/*   Updated: 2024/12/07 15:43:17 by aevstign         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-static bool	ft_ispace(char c)
+static bool	is_space(char c)
 {
 	return ((c >= 9 && c <= 13) || c == 32);
 }
 
+static bool	is_digit(char c)
+{
+	return (c >= '0' && c <= '9');
+}
+
 char	*validate_str(char *str)
 {
-	unsigned	int	len;
 	char	*num_str;
 
-	len = 0;
-	while(ft_ispace(*str))
+	while (is_space(*str))
 		str++;
 	if (*str == '+')
 		str++;
-	else if(*str == '-')
+	else if (*str == '-')
 		error_exit("Error: only positive numbers allowed");
-	if (!ft_isdigit(*str))
+	if (!is_digit(*str))
 		error_exit("Error: all inputs should be digits");
 	num_str = str;
-	while (ft_isdigit(*str++))
-		len++;
+
 	return (num_str);
 }
 
@@ -31,20 +45,18 @@ long	ft_atol(char *str)
 
 	num = 0;
 	str = validate_str(str);
-	while (ft_isdigit(*str))
+	while (is_digit(*str))
 	{
 		num = (num * 10) + (*str - '0');
 		str++;
 	}
-	if (num > INT_MAX)
-	{
-			error_exit("The value is too bigg");
-	}
+	if (num > 2147483647)
+		error_exit("The value is too bigg");
 	return (num);
 }
 
-void	parse_input(table_t	*table, char **argv)
-{	
+void	parse_input(t_table	*table, char **argv)
+{
 	table->philo_num = ft_atol(argv[1]);
 	table->time_to_die = ft_atol(argv[2]) * 1e3;
 	table->time_to_eat = ft_atol(argv[3]) * 1e3;
