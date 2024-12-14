@@ -6,22 +6,22 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:30:20 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/07 13:44:31 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/14 01:02:34 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	set_bool(t_mutex *mutex, bool *dest, bool value)
+void	set_int(t_mutex *mutex, int *dest, int value)
 {
 	safe_mutex_op(mutex, LOCK);
 	*dest = value;
 	safe_mutex_op(mutex, UNLOCK);
 }
 
-bool	get_bool(t_mutex *mutex, bool *value)
+int	get_int(t_mutex *mutex, int *value)
 {
-	bool	ret;
+	int	ret;
 
 	safe_mutex_op(mutex, LOCK);
 	ret = *value;
@@ -46,7 +46,7 @@ long	get_long(t_mutex *mutex, long *value)
 	return (ret);
 }
 
-bool	simulation_finished(t_table *table)
+int	simulation_finished(t_simulation *sim)
 {
-	return (get_bool(&table->table_mutex, &table->end_simulation));
+	return (get_int(&sim->sim_mutex, &sim->end_simulation));
 }

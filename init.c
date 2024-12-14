@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:26:18 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/08 21:28:48 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/14 01:02:50 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,57 +15,61 @@
 
 static void	assign_ordered_fork(t_philo *philo, t_fork *forks, int position)
 {
-	int	philo_num;
+	int		philo_num;
+	t_fork	*right_fork;
+	t_fork	*left_fork;
 
-	philo_num = philo->table->philo_num;
+	philo_num = philo->sim->philo_num;
+	right_fork = &forks[position];
+	left_fork = &forks[(position + 1) % philo_num];
 	if (philo->id % 2 == 0)
 	{
-		philo->first_fork = &forks[position];
-		philo->second_fork = &forks[(position + 1) % philo_num];
+		philo->first_fork = right_fork;
+		philo->second_fork = left_fork;
 	}
 	else
 	{
-		philo->first_fork = &forks[(position + 1) % philo_num];
-		philo->second_fork = &forks[position];
+		philo->first_fork = left_fork;
+		philo->second_fork = right_fork;
 	}
 }
 
-static void	init_philo(t_table *table)
+static void	init_philo(t_simulation *sim)
 {
 	long	i;
 	t_philo	*philo;
 
 	i = 0;
-	while (i < table->philo_num)
+	while (i < sim->philo_num)
 	{
-		philo = table->philos + i;
+		philo = sim->philos + i;
 		philo->meals_counter = 0;
-		philo->table = table;
-		philo->full = false;
+		philo->sim = sim;
+		philo->full = 0;
 		philo->id = i + 1;
 		safe_mutex_op(&philo->philo_mutex, INIT);
-		assign_ordered_fork(philo, table->forks, i);
+		assign_ordered_fork(philo, sim->forks, i);
 		i++;
 	}
 }
 
-void	init(t_table	*table)
+void	init(t_simulation	*sim)
 {
 	int	i;
 
 	i = 0;
-	table->end_simulation = false;
-	table->all_threads_ready = false;
-	table->threads_running_num = 0;
-	table->philos = safe_malloc(sizeof(t_philo) * table->philo_num);
-	table->forks = safe_malloc(sizeof(t_fork) * table->philo_num);
-	safe_mutex_op(&table->table_mutex, INIT);
-	safe_mutex_op(&table->write_mutex, INIT);
-	while (i < table->philo_num)
+	sim->end_simulation = 0;
+	sim->all_threads_ready = 0;
+	sim->threads_running_num = 0;
+	sim->philos = safe_malloc(sizeof(t_philo) * sim->philo_num);
+	sim->forks = safe_malloc(sizeof(t_fork) * sim->philo_num);
+	safe_mutex_op(&sim->sim_mutex, INIT);
+	safe_mutex_op(&sim->write_mutex, INIT);
+	while (i < sim->philo_num)
 	{
-		safe_mutex_op(&table->forks[i].fork, INIT);
-		table->forks[i].id = i;
+		safe_mutex_op(&sim->forks[i].fork, INIT);
+		sim->forks[i].id = i;
 		i++;
 	}
-	init_philo(table);
+	init_philo(sim);
 }

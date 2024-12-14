@@ -6,48 +6,48 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:28:44 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/07 13:30:00 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:10:05 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static bool	is_philo_died(t_philo *philo)
+static int	is_philo_died(t_philo *philo)
 {
 	long	elapsed;
 	long	time_to_die;
 	long	current_time;
 	long	last_meal_time;
 
-	if (get_bool(&philo->table->table_mutex, &philo->full))
-		return (false);
+	if (get_int(&philo->sim->sim_mutex, &philo->full))
+		return (0);
 	current_time = gettime(MILISECOND);
 	last_meal_time = get_long(&philo->philo_mutex, &philo->last_meal_time);
 	elapsed = current_time - last_meal_time;
-	time_to_die = philo->table->time_to_die / 1e3;
+	time_to_die = philo->sim->time_to_die / 1e3;
 	if (elapsed > time_to_die)
-		return (true);
-	return (false);
+		return (1);
+	return (0);
 }
 
-void	*monitor_dinner(void *data)
+void	*monitor(void *data)
 {
-	t_table	*table;
-	int		i;
+	t_simulation	*sim;
+	int				i;
 
-	table = (t_table *)data;
-	while (!all_threads_running(&table->table_mutex,
-			&table->threads_running_num, table->philo_num))
+	sim = (t_simulation *)data;
+	while (!all_threads_running(&sim->sim_mutex,
+			&sim->threads_running_num, sim->philo_num))
 		usleep(1000);
-	while (!simulation_finished(table))
+	while (!simulation_finished(sim))
 	{
 		i = 0;
-		while (i < table->philo_num && !simulation_finished(table))
+		while (i < sim->philo_num && !simulation_finished(sim))
 		{
-			if (is_philo_died(table->philos + i))
+			if (is_philo_died(sim->philos + i))
 			{
-				write_status(DIED, table->philos + i, DEBUG_MODE);
-				set_bool(&table->table_mutex, &table->end_simulation, true);
+				write_status(DIED, sim->philos + i, DEBUG_MODE);
+				set_int(&sim->sim_mutex, &sim->end_simulation, 1);
 			}
 			i++;
 		}

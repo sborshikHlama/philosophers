@@ -1,37 +1,70 @@
-# Compiler and flags
-CC=gcc
-INCDIRS=-I. 
-CFLAGS=-Wall -Wextra -Werror -pthread
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/12/14 17:15:51 by aevstign          #+#    #+#              #
+#    Updated: 2024/12/14 17:21:53 by aevstign         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-# Source files
-CFILES=main.c init.c dinner.c parse.c safe_functions.c \
-		synchro.c getters_setters.c utils.c \
-		write.c monitor.c
+# colors
+RED		=	"\033[0;31m"
+GREEN	=	"\033[0;32m"
+RESET	=	"\033[0m"
 
-# Paths
-OBJDIR=objects
-OBJECTS=$(patsubst %.c,$(OBJDIR)/%.o,$(CFILES))
+NAME	=	philo
 
-# Output binary
-BINARY=philo
+#comands
+CC	=	cc
+DFLAGS	=	-g #-g3 -gdwarf-3 -fsanitize=thread
+CFLAGS	=	-Wall -Wextra -Werror -pthread #-fsanitize=thread
+RM		=	rm -rf
+SILENT	=	--silent
 
-# Default target
-all: $(BINARY)
+#directories
+PHILO_DIR	=	./
+BUILD_DIR	=	./objects/
 
-# Link the binary
-$(BINARY): $(OBJECTS)
-	$(CC) -o $@ $^
+#files
+PHILO_SOURCES	=	$(PHILO_DIR)/simulation.c \
+					$(PHILO_DIR)/init.c \
+					$(PHILO_DIR)/parse.c \
+					$(PHILO_DIR)/synchro.c \
+					$(PHILO_DIR)/getters_setters.c \
+					$(PHILO_DIR)/monitor.c \
+					$(PHILO_DIR)/main.c \
+					$(PHILO_DIR)/utils.c \
+					$(PHILO_DIR)/write.c \
+					$(PHILO_DIR)/safe_functions.c 
 
-# Compile object files to the objects folder
-$(OBJDIR)/%.o: %.c
-	$(CC) $(CFLAGS) $(INCDIRS) -c $< -o $@
+#build
+PHILO_OBJS	=	$(PHILO_SOURCES:$(PHILO_DIR)%.c=$(BUILD_DIR)%.o)
 
-# Create the objects folder if it doesn't exist
-$(OBJECTS): | $(OBJDIR)
+#rules
+all: $(NAME)
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+$(NAME): $(PHILO_OBJS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(PHILO_OBJS) $(DFLAGS)
+	@echo $(GREEN)"\n✅✅✅✅✅✅✅✅✅✅✅✅\n✅✅✅Bon appetit!✅✅✅\n✅✅✅✅✅✅✅✅✅✅✅✅\n"$(RESET)
 
-# Clean all objects and binaries
+$(BUILD_DIR)%.o: $(PHILO_DIR)%.c
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@
+	@echo $(GREEN)"✅ $<"$(RESET)
+
 clean:
-	rm -rf $(BINARY) $(OBJDIR)
+	@$(RM) $(BUILD_DIR)
+	@echo $(RED)"❗️ cleaned"$(RESET)
+
+fclean: clean
+	@$(RM) $(NAME)
+	@echo $(RED)"❗️ fcleaned"$(RESET)
+	@echo $(RED)"\n❗️❗️❗️❗️❗️❗️❗️❗️❗️\n❗️❗️❗️PHILO!❗️❗️❗️\n❗️❗️❗️❗️❗️❗️❗️❗️❗️\n"$(RESET)
+
+
+re: fclean all
+
+.PHONY: all clean fclean re

@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:03:27 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/08 21:30:30 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/14 03:12:20 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ long	gettime(t_time_code time_code)
 void	precise_usleep(long usec)
 {
 	long	start;
-	// long	elapsed;
-	// long	rem;
 
 	start = gettime(MICROSECOND);
 	while (gettime(MICROSECOND) - start < usec)

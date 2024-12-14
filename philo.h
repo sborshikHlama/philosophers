@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:04 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/08 21:56:58 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:25:57 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <pthread.h>
-# include <stdbool.h>
+# include <limits.h>
 # include <sys/time.h>
 # include <errno.h>
 
@@ -32,9 +32,9 @@
 # define GRAY      "\033[0;37m"
 # define RESET     "\033[0m"
 
-# define DEBUG_MODE 1
+# define DEBUG_MODE	0
 
-typedef struct s_table	t_table;
+typedef struct s_sim	t_simulation;
 typedef pthread_mutex_t	t_mutex;
 
 typedef struct s_fork
@@ -50,29 +50,29 @@ typedef struct s_philo
 	long			last_meal_time;
 	t_fork			*first_fork;
 	t_fork			*second_fork;
-	bool			full;
-	t_table			*table;
+	int				full;
+	t_simulation	*sim;
 	pthread_t		thread_id;
-	t_mutex			philo_mutex; //used for races with the monitor
+	t_mutex			philo_mutex;
 }				t_philo;
 
-typedef struct s_table
+typedef struct s_sim
 {
 	long			philo_num;
 	long			time_to_die;
 	long			time_to_sleep;
 	long			time_to_eat;
-	long			limit_meals;
+	long			meals_to_eat;
 	long			start_simulation;
-	bool			all_threads_ready;
-	bool			end_simulation;
+	int				all_threads_ready;
+	int				end_simulation;
 	long			threads_running_num;
 	pthread_t		monitor;
-	t_mutex			table_mutex;
+	t_mutex			sim_mutex;
 	t_mutex			write_mutex;
 	t_fork			*forks;
 	t_philo			*philos;
-}				t_table;
+}				t_simulation;
 
 typedef enum e_status
 {
@@ -103,40 +103,42 @@ typedef enum e_time_code
 }		t_time_code;
 
 // parse.c
-void	parse_input(t_table	*table, char **argv);
+void	parse_input(t_simulation	*sim, char **argv);
 void	error_exit(const char	*msg);
+
+// utils.c
 long	gettime(t_time_code time_code);
 void	precise_usleep(long usec);
 
-void	clean(t_table *table);
+void	clean(t_simulation *sim);
 
-// safe_wrappers.cc
+// dinner.c
+void	simulate(t_simulation	*sim);
+
+// safe_functions.c
 void	*safe_malloc(size_t	bytes);
 void	safe_thread_op(pthread_t *thread, void *(*func)(void *), void *data,
 			t_operation operation);
 void	safe_mutex_op(t_mutex *mutex, t_operation operation);
-void	parse_input(t_table	*table, char **argv);
+void	parse_input(t_simulation	*sim, char **argv);
 
 /*functions from init.c*/
-void	init(t_table	*table);
+void	init(t_simulation	*sim);
 
 /*funtctions from getters_setters*/
-void	set_bool(t_mutex *mutex, bool *dest, bool value);
-bool	get_bool(t_mutex *mutex, bool *value);
+void	set_int(t_mutex *mutex, int *dest, int value);
+int		get_int(t_mutex *mutex, int *value);
 void	set_long(t_mutex *mutex, long *dest, long value);
 long	get_long(t_mutex *mutex, long *value);
-bool	simulation_finished(t_table *table);
+int		simulation_finished(t_simulation *sim);
 
-void	run_threads(t_table	*table);
-void	think(t_philo *philo, bool pre_simulation);
-void	de_sync(t_philo *philo);
 /*synchro.c*/
-void	wait_all_threads(t_table *table);
-bool	all_threads_running(t_mutex *mutex,
+void	wait_all_threads(t_simulation *sim);
+int		all_threads_running(t_mutex *mutex,
 			long *threads, long philo_num);
+void	*monitor(void *data);
+void	increase_long(t_mutex *mutex, long *value);
 
 /*write.c*/
-void	write_status(t_philo_status status, t_philo *philo, bool debug);
-void	increase_long(t_mutex *mutex, long *value);
-void	*monitor_dinner(void *data);
+void	write_status(t_philo_status status, t_philo *philo, int debug);
 #endif
