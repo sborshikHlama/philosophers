@@ -6,7 +6,7 @@
 #    By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/14 17:15:51 by aevstign          #+#    #+#              #
-#    Updated: 2024/12/14 17:21:53 by aevstign         ###   ########.fr        #
+#    Updated: 2024/12/28 11:15:39 by aevstign         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ NAME	=	philo
 #comands
 CC	=	cc
 DFLAGS	=	-g #-g3 -gdwarf-3 -fsanitize=thread
-CFLAGS	=	-Wall -Wextra -Werror -pthread #-fsanitize=thread
+CFLAGS	=	-fsanitize=thread
 RM		=	rm -rf
 SILENT	=	--silent
 
@@ -38,7 +38,6 @@ PHILO_SOURCES	=	$(PHILO_DIR)/simulation.c \
 					$(PHILO_DIR)/main.c \
 					$(PHILO_DIR)/utils.c \
 					$(PHILO_DIR)/write.c \
-					$(PHILO_DIR)/safe_functions.c 
 
 #build
 PHILO_OBJS	=	$(PHILO_SOURCES:$(PHILO_DIR)%.c=$(BUILD_DIR)%.o)

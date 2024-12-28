@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:40:49 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/14 01:02:34 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/15 13:17:18 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	write_status(t_philo_status status, t_philo *philo, int debug)
 	elapsed = gettime(MILISECOND) - philo->sim->start_simulation;
 	if (philo->full)
 		return ;
-	safe_mutex_op(&philo->sim->write_mutex, LOCK);
+	pthread_mutex_lock(&philo->sim->write_mutex);
 	if (debug)
 		write_status_debug(status, philo, elapsed);
 	else
@@ -59,5 +59,5 @@ void	write_status(t_philo_status status, t_philo *philo, int debug)
 		else if (status == DIED && !simulation_finished(philo->sim))
 			printf(RED"%-6ld %d  died\n"RESET, elapsed, philo->id);
 	}
-	safe_mutex_op(&philo->sim->write_mutex, UNLOCK);
+	pthread_mutex_unlock(&philo->sim->write_mutex);
 }

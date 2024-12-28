@@ -1,2 +1,5 @@
 /LazyPhilosophersTester
 philo
+.vscode/
+build/
+objects/

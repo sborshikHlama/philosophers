@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:04 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/14 17:25:57 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/28 11:10:23 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # include <pthread.h>
 # include <limits.h>
 # include <sys/time.h>
-# include <errno.h>
 
 # define RED       "\033[1;31m"
 # define GREEN     "\033[1;32m"
@@ -32,7 +31,20 @@
 # define GRAY      "\033[0;37m"
 # define RESET     "\033[0m"
 
-# define DEBUG_MODE	0
+# define EPERM		1
+# define ENOENT		2
+# define ESRCH		3
+# define EINTR		4
+# define EIO		5
+# define ENXIO		6
+# define ENOMEM		12
+# define EINVAL		22
+# define EDEADLK	35
+# define ECANCELED	125
+# define EBUSY		16
+# define EAGAIN		35
+
+# define DEBUG_MODE	1
 
 typedef struct s_sim	t_simulation;
 typedef pthread_mutex_t	t_mutex;
@@ -65,8 +77,8 @@ typedef struct s_sim
 	long			meals_to_eat;
 	long			start_simulation;
 	int				all_threads_ready;
-	int				end_simulation;
-	long			threads_running_num;
+	int				stop_flag;
+	int				threads_running_num;
 	pthread_t		monitor;
 	t_mutex			sim_mutex;
 	t_mutex			write_mutex;
@@ -103,8 +115,8 @@ typedef enum e_time_code
 }		t_time_code;
 
 // parse.c
-void	parse_input(t_simulation	*sim, char **argv);
-void	error_exit(const char	*msg);
+int		parse_input(t_simulation	*sim, char **argv);
+int		ft_error(const char	*msg);
 
 // utils.c
 long	gettime(t_time_code time_code);
@@ -112,18 +124,18 @@ void	precise_usleep(long usec);
 
 void	clean(t_simulation *sim);
 
-// dinner.c
+// simulation.c
 void	simulate(t_simulation	*sim);
+void	*philosopher(void *data);
 
 // safe_functions.c
 void	*safe_malloc(size_t	bytes);
 void	safe_thread_op(pthread_t *thread, void *(*func)(void *), void *data,
 			t_operation operation);
 void	safe_mutex_op(t_mutex *mutex, t_operation operation);
-void	parse_input(t_simulation	*sim, char **argv);
 
 /*functions from init.c*/
-void	init(t_simulation	*sim);
+int		init(t_simulation	*sim);
 
 /*funtctions from getters_setters*/
 void	set_int(t_mutex *mutex, int *dest, int value);
