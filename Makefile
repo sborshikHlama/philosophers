@@ -6,7 +6,7 @@
 #    By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/14 17:15:51 by aevstign          #+#    #+#              #
-#    Updated: 2024/12/28 11:15:39 by aevstign         ###   ########.fr        #
+#    Updated: 2025/02/11 14:36:19 by aevstign         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,9 +18,9 @@ RESET	=	"\033[0m"
 NAME	=	philo
 
 #comands
-CC	=	cc
+CC	=	gcc
 DFLAGS	=	-g #-g3 -gdwarf-3 -fsanitize=thread
-CFLAGS	=	-fsanitize=thread
+CFLAGS	=	-Wall -Wextra -Werror
 RM		=	rm -rf
 SILENT	=	--silent
 
@@ -29,15 +29,15 @@ PHILO_DIR	=	./
 BUILD_DIR	=	./objects/
 
 #files
-PHILO_SOURCES	=	$(PHILO_DIR)/simulation.c \
-					$(PHILO_DIR)/init.c \
-					$(PHILO_DIR)/parse.c \
-					$(PHILO_DIR)/synchro.c \
-					$(PHILO_DIR)/getters_setters.c \
-					$(PHILO_DIR)/monitor.c \
-					$(PHILO_DIR)/main.c \
-					$(PHILO_DIR)/utils.c \
-					$(PHILO_DIR)/write.c \
+PHILO_SOURCES	=	$(PHILO_DIR)simulation.c \
+					$(PHILO_DIR)init.c \
+					$(PHILO_DIR)parse.c \
+					$(PHILO_DIR)synchro.c \
+					$(PHILO_DIR)getters_setters.c \
+					$(PHILO_DIR)monitor.c \
+					$(PHILO_DIR)main.c \
+					$(PHILO_DIR)utils.c \
+					$(PHILO_DIR)write.c \
 
 #build
 PHILO_OBJS	=	$(PHILO_SOURCES:$(PHILO_DIR)%.c=$(BUILD_DIR)%.o)

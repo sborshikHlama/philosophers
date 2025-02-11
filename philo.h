@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:04 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/28 11:10:23 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/11 15:23:17 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define EBUSY		16
 # define EAGAIN		35
 
-# define DEBUG_MODE	1
+# define DEBUG_MODE	0
 
 typedef struct s_sim	t_simulation;
 typedef pthread_mutex_t	t_mutex;
@@ -85,6 +85,15 @@ typedef struct s_sim
 	t_fork			*forks;
 	t_philo			*philos;
 }				t_simulation;
+
+typedef enum e_error_status
+{
+	MUTEX_INIT_ERROR,
+	MUTEX_LOCK_ERROR,
+	MUTEX_UNLOCK_ERROR,
+	PTHREAD_CREATE_ERROR,
+	SUCCESS,
+}			t_error_status;
 
 typedef enum e_status
 {
@@ -153,4 +162,7 @@ void	increase_long(t_mutex *mutex, long *value);
 
 /*write.c*/
 void	write_status(t_philo_status status, t_philo *philo, int debug);
+
+int		inc_running_threads(t_mutex *mutex, int num);
+
 #endif

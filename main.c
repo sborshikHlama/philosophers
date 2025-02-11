@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:51 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/28 11:10:05 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/11 15:27:17 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,13 @@ static int	start_simulation(t_simulation *sim)
 	sim->start_simulation = gettime(MILISECOND);
 	while (++i < sim->philo_num)
 		if (pthread_create(&sim->philos[i].thread_id,
-				NULL, philosopher, &sim->philos[i]))
-			return (0);
+				NULL, philosopher, &sim->philos[i]) != 0)
+			return (PTHREAD_CREATE_ERROR);
 	set_int(&sim->sim_mutex, &sim->all_threads_ready, 1);
 	if (sim->philo_num > 1)
-		if (pthread_create(&sim->monitor, NULL, monitor, sim))
-			return (0);
-	return (1);
+		if (pthread_create(&sim->monitor, NULL, monitor, sim) != 0)
+			return (PTHREAD_CREATE_ERROR);
+	return (SUCCESS);
 }
 
 static int	join_threads(t_simulation *sim)
@@ -66,18 +66,34 @@ static int	join_threads(t_simulation *sim)
 	return (1);
 }
 
+int	inc_running_threads(t_mutex *mutex, int num)
+{
+	if (pthread_mutex_lock(mutex) != 0)
+		return (MUTEX_LOCK_ERROR);
+	num++;
+	if (pthread_mutex_unlock(mutex) != 0)
+		return (MUTEX_UNLOCK_ERROR);
+	return (SUCCESS);
+}
+
 int	main(int argc, char **argv)
 {
 	t_simulation		sim;
 
 	if (argc == 5 || argc == 6)
 	{
-		if (parse_input(&sim, argv))
+		if (parse_input(&sim, argv) != SUCCESS)
 			return (1);
-		if (init(&sim))
+		if (init(&sim) != SUCCESS)
+		{
+			clean(&sim);
 			return (1);
-		if (!start_simulation(&sim))
+		}
+		if (start_simulation(&sim) != SUCCESS)
+		{
+			clean(&sim);
 			return (1);
+		}
 		join_threads(&sim);
 	}
 	else
