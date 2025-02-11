@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:04:17 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/28 09:58:09 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/11 14:52:33 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	parse_input(t_simulation	*sim, char **argv)
 {
 	sim->philo_num = ft_atol(argv[1]);
 	if (sim->philo_num < 0)
-		return (1);
+		return (0);
 	sim->time_to_die = ft_atol(argv[2]) * 1e3;
 	sim->time_to_eat = ft_atol(argv[3]) * 1e3;
 	sim->time_to_sleep = ft_atol(argv[4]) * 1e3;
@@ -78,15 +78,15 @@ int	parse_input(t_simulation	*sim, char **argv)
 		|| sim->time_to_sleep < 6e4)
 	{
 		ft_error("Use timestamps more than 60ms");
-		return (1);
+		return (0);
 	}
 	if (argv[5])
 	{
 		sim->meals_to_eat = ft_atol(argv[5]);
 		if (sim->meals_to_eat < 0)
-			return (1);
+			return (0);
 	}
 	else
 		sim->meals_to_eat = -1;
-	return (0);
+	return (SUCCESS);
 }
