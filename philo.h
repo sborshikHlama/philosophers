@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:04 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/11 15:23:17 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/12 17:38:23 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,14 +134,7 @@ void	precise_usleep(long usec);
 void	clean(t_simulation *sim);
 
 // simulation.c
-void	simulate(t_simulation	*sim);
 void	*philosopher(void *data);
-
-// safe_functions.c
-void	*safe_malloc(size_t	bytes);
-void	safe_thread_op(pthread_t *thread, void *(*func)(void *), void *data,
-			t_operation operation);
-void	safe_mutex_op(t_mutex *mutex, t_operation operation);
 
 /*functions from init.c*/
 int		init(t_simulation	*sim);
@@ -155,14 +148,12 @@ int		simulation_finished(t_simulation *sim);
 
 /*synchro.c*/
 void	wait_all_threads(t_simulation *sim);
-int		all_threads_running(t_mutex *mutex,
-			long *threads, long philo_num);
 void	*monitor(void *data);
 void	increase_long(t_mutex *mutex, long *value);
 
 /*write.c*/
 void	write_status(t_philo_status status, t_philo *philo, int debug);
 
-int		inc_running_threads(t_mutex *mutex, int num);
+int		increase_int(t_mutex *mutex, int *num);
 
 #endif
