@@ -6,33 +6,11 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:28:44 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/27 13:04:36 by aevstign         ###   ########.fr       */
+/*   Updated: 2024/12/28 11:43:57 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-// static int	check_meals(t_simulation *sim)
-// {
-// 	int	i;
-// 	int	meals_eaten;
-
-// 	i = -1;
-// 	meals_eaten = 1;
-// 	while (++i < sim->philo_num)
-// 	{
-// 		if (is_philo_died(&sim->philos[i]))
-// 			return (1);
-// 		pthread_mutex_lock(&sim->philos[i].philo_mutex);
-// 		if (sim->meals_to_eat != -1)
-// 			if (sim->philos[i].meals_counter < sim->meals_to_eat)
-// 				meals_eaten = 0;
-// 		pthread_mutex_unlock(&sim->philos[i].philo_mutex);
-// 	}
-// 	if ((sim->meals_to_eat != -1) && (meals_eaten == 1))
-// 		return (1);
-// 	return (0);
-// }
 
 static int	is_philo_died(t_philo *philo)
 {

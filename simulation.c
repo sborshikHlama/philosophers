@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:01:52 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/11 15:24:04 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/12 17:38:44 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ void	*philosopher(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	handle_error(inc_running_threads(&philo->sim->sim_mutex,
-			philo->sim->threads_running_num));
+	handle_error(increase_int(&philo->sim->sim_mutex,
+			&philo->sim->threads_running_num));
 	if (philo->sim->meals_to_eat == 0)
 		return (NULL);
 	wait_all_threads(philo->sim);

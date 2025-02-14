@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:51 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/11 15:27:17 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/12 17:38:14 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,11 +66,11 @@ static int	join_threads(t_simulation *sim)
 	return (1);
 }
 
-int	inc_running_threads(t_mutex *mutex, int num)
+int	increase_int(t_mutex *mutex, int *num)
 {
 	if (pthread_mutex_lock(mutex) != 0)
 		return (MUTEX_LOCK_ERROR);
-	num++;
+	(*num)++;
 	if (pthread_mutex_unlock(mutex) != 0)
 		return (MUTEX_UNLOCK_ERROR);
 	return (SUCCESS);
