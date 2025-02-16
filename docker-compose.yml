@@ -1,0 +1,8 @@
+services:
+  philosophers:
+    build: .
+    container_name: philosophers_test
+    volumes:
+      - .:/philosophers
+    working_dir: /philosophers
+    command: ["python3", "tests/main.py"]
