@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:01:52 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/19 18:28:51 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:14:49 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int	lone_philo(t_philo *philo)
 		return (MUTEX_LOCK_ERROR);
 	if (write_status(TAKE_FIRST_FORK, philo) == MUTEX_WRITE_ERROR)
 		return (MUTEX_WRITE_ERROR);
-	precise_usleep(philo->sim->time_to_die);
+	precise_usleep(philo->sim, philo->sim->time_to_die);
 	if (write_status(DIED, philo) == MUTEX_WRITE_ERROR)
 		return (MUTEX_WRITE_ERROR);
 	if (pthread_mutex_unlock(&philo->first_fork->fork) != 0)
@@ -26,16 +26,11 @@ static int	lone_philo(t_philo *philo)
 	return (SUCCESS);
 }
 
-void	*handle_error(t_error_status status)
+void	*wrapper(int status, t_simulation *sim)
 {
-	if (status == MUTEX_INIT_ERROR)
-		write(1, "philo error: failed to init mutex\n", 34);
-	else if (status == MUTEX_LOCK_ERROR)
-		write(1, "philo error: failed to lock mutex\n", 34);
-	else if (status == MUTEX_UNLOCK_ERROR)
-		write(1, "philo error: failed to unlock mutex\n", 36);
-	else if (status == MUTEX_WRITE_ERROR)
-		write(1, "philo error: failed to write with mutex\n", 40);
+	handle_error(status);
+	if (status != SUCCESS)
+		set_int(&sim->sim_mutex, &sim->error_flag, 1);
 	return (NULL);
 }
 
@@ -49,13 +44,13 @@ static	int	eat(t_philo *philo)
 	write_status(TAKE_SECOND_FORK, philo);
 	if (pthread_mutex_lock(&philo->philo_mutex) != 0)
 		return (MUTEX_LOCK_ERROR);
-	philo->last_meal_time = gettime(MILISECOND);
+	philo->last_meal_time = gettime_ms();
 	if (pthread_mutex_unlock(&philo->philo_mutex) != 0)
 		return (MUTEX_LOCK_ERROR);
 	if (write_status(EATING, philo) == MUTEX_WRITE_ERROR)
 		return (MUTEX_WRITE_ERROR);
+	precise_usleep(philo->sim, philo->sim->time_to_eat);
 	increase_long(&philo->philo_mutex, &philo->meals_counter);
-	precise_usleep(philo->sim->time_to_eat);
 	if (philo->meals_counter == philo->sim->meals_to_eat)
 		set_int(&philo->philo_mutex, &philo->full, 1);
 	if (pthread_mutex_unlock(&philo->first_fork->fork) != 0)
@@ -67,25 +62,28 @@ static	int	eat(t_philo *philo)
 
 static int	think(t_philo *philo, int silent)
 {
-	long	time_to_think;
+	time_t	time_to_think;
+	time_t	time_from_last_meal;
+	time_t	time_till_death;
 
 	if (pthread_mutex_lock(&philo->philo_mutex) != 0)
 		return (MUTEX_LOCK_ERROR);
-	time_to_think = (philo->sim->time_to_die
-			- (gettime(MILISECOND) - philo->last_meal_time)
-			- philo->sim->time_to_eat) / 2;
+	time_from_last_meal = gettime_ms() - philo->last_meal_time;
+	time_till_death = (philo->sim->time_to_die) - time_from_last_meal;
+	time_to_think = (time_till_death
+			- (philo->sim->time_to_eat)) / 2;
 	if (pthread_mutex_unlock(&philo->philo_mutex) != 0)
 		return (MUTEX_UNLOCK_ERROR);
 	if (time_to_think < 0)
 		time_to_think = 0;
-	if (time_to_think == 0 && silent > 0)
+	if (time_to_think == 0 && silent == 0)
 		time_to_think = 1;
 	if (time_to_think > 600)
 		time_to_think = 200;
 	if (silent == 0)
 		if (write_status(THINKING, philo) == MUTEX_WRITE_ERROR)
 			return (MUTEX_WRITE_ERROR);
-	precise_usleep(time_to_think);
+	precise_usleep(philo->sim, time_to_think);
 	return (SUCCESS);
 }
 
@@ -94,24 +92,26 @@ void	*philosopher(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	handle_error(increase_int(&philo->sim->sim_mutex,
-			&philo->sim->threads_running_num));
 	if (philo->sim->meals_to_eat == 0)
 		return (NULL);
+	wrapper(increase_int(&philo->sim->sim_mutex,
+			&philo->sim->threads_running_num), philo->sim);
+	pthread_mutex_lock(&philo->philo_mutex);
+	philo->last_meal_time = gettime_ms();
+	pthread_mutex_unlock(&philo->philo_mutex);
 	wait_all_threads(philo->sim);
-	set_long(&philo->philo_mutex, &philo->last_meal_time, gettime(MILISECOND));
 	if (philo->sim->philo_num == 1)
-		return (handle_error(lone_philo(philo)));
-	if (philo->id % 2)
-		handle_error(think(philo, 1));
+		return (wrapper(lone_philo(philo), philo->sim));
+	else if (philo->id % 2)
+		wrapper(think(philo, 1), philo->sim);
 	while (!simulation_finished(philo->sim))
 	{
 		if (philo->full)
 			break ;
-		handle_error(eat(philo));
-		handle_error(write_status(SLEEPING, philo));
-		precise_usleep(philo->sim->time_to_sleep);
-		handle_error(think(philo, 0));
+		wrapper(eat(philo), philo->sim);
+		wrapper(write_status(SLEEPING, philo), philo->sim);
+		precise_usleep(philo->sim, philo->sim->time_to_sleep);
+		wrapper(think(philo, 0), philo->sim);
 	}
 	return (NULL);
 }

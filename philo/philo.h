@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:04 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/19 17:05:03 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/22 11:34:11 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,6 @@
 # define GRAY      "\033[0;37m"
 # define RESET     "\033[0m"
 
-# define EPERM		1
-# define ENOENT		2
-# define ESRCH		3
-# define EINTR		4
-# define EIO		5
-# define ENXIO		6
-# define ENOMEM		12
-# define EINVAL		22
-# define EDEADLK	35
-# define ECANCELED	125
-# define EBUSY		16
-# define EAGAIN		35
-
 typedef struct s_sim	t_simulation;
 typedef pthread_mutex_t	t_mutex;
 
@@ -57,7 +44,7 @@ typedef struct s_philo
 {
 	int				id;
 	long			meals_counter;
-	long			last_meal_time;
+	time_t			last_meal_time;
 	t_fork			*first_fork;
 	t_fork			*second_fork;
 	int				full;
@@ -68,15 +55,16 @@ typedef struct s_philo
 
 typedef struct s_sim
 {
-	long			philo_num;
-	long			time_to_die;
-	long			time_to_sleep;
-	long			time_to_eat;
-	long			meals_to_eat;
-	long			start_simulation;
+	int				philo_num;
+	time_t			time_to_die;
+	time_t			time_to_sleep;
+	time_t			time_to_eat;
+	time_t			start_simulation;
+	int				meals_to_eat;
 	int				all_threads_ready;
 	int				stop_flag;
 	int				threads_running_num;
+	int				error_flag;
 	pthread_t		monitor;
 	t_mutex			sim_mutex;
 	t_mutex			write_mutex;
@@ -89,9 +77,10 @@ typedef enum e_error_status
 	MUTEX_INIT_ERROR = 2,
 	MUTEX_LOCK_ERROR = 3,
 	MUTEX_UNLOCK_ERROR = 4,
-	PTHREAD_CREATE_ERROR = 5,
-	MUTEX_WRITE_ERROR = 6,
-	SUCCESS = 7,
+	MUTEX_WRITE_ERROR = 5,
+	PTHREAD_CREATE_ERROR = 6,
+	PTHREAD_JOIN_ERROR = 7,
+	SUCCESS = 8,
 }			t_error_status;
 
 typedef enum e_status
@@ -127,8 +116,8 @@ int		parse_input(t_simulation	*sim, char **argv);
 int		ft_error(const char	*msg);
 
 // utils.c
-long	gettime(t_time_code time_code);
-void	precise_usleep(long usec);
+time_t	gettime_ms(void);
+void	precise_usleep(t_simulation *sim, time_t sleep_time);
 
 void	clean(t_simulation *sim);
 
@@ -152,7 +141,9 @@ void	increase_long(t_mutex *mutex, long *value);
 
 /*write.c*/
 int		write_status(t_philo_status status, t_philo *philo);
-
 int		increase_int(t_mutex *mutex, int *num);
+
+// main.c
+int		handle_error(t_error_status status);
 
 #endif

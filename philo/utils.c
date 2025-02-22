@@ -6,39 +6,30 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:03:27 by aevstign          #+#    #+#             */
-/*   Updated: 2024/12/16 15:48:49 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/21 23:40:36 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long	gettime(t_time_code time_code)
+time_t	gettime_ms(void)
 {
 	struct timeval	tv;
 
-	if (gettimeofday(&tv, NULL) < 0)
-		ft_error("Error: gettimeofday failed");
-	if (time_code == SECOND)
-		return (tv.tv_sec + (tv.tv_sec / 1e6));
-	else if (time_code == MILISECOND)
-		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
-	else if (time_code == MICROSECOND)
-		return ((tv.tv_sec * 1e6) + tv.tv_usec);
-	else
-	{
-		ft_error("Error: wrong input to gettimeofday");
-	}
-	return (52);
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void	precise_usleep(long usec)
+void	precise_usleep(t_simulation *sim, time_t sleep_time)
 {
-	long	start;
+	time_t	wake_up;
 
-	start = gettime(MICROSECOND);
-	while (gettime(MICROSECOND) - start < usec)
+	wake_up = gettime_ms() + sleep_time;
+	while (gettime_ms() < wake_up)
 	{
-		usleep(500);
+		if (simulation_finished(sim))
+			break ;
+		usleep(100);
 	}
 }
 
@@ -55,6 +46,6 @@ void	finish_simulation(t_simulation *sim)
 
 void	sim_delay(t_simulation *sim)
 {
-	while (gettime(MILISECOND) < sim->start_simulation)
+	while (gettime_ms() < sim->start_simulation)
 		continue ;
 }
