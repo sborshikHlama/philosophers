@@ -6,7 +6,7 @@
 #    By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/14 17:15:51 by aevstign          #+#    #+#              #
-#    Updated: 2025/02/22 12:45:20 by aevstign         ###   ########.fr        #
+#    Updated: 2025/02/22 16:15:24 by aevstign         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,6 @@ NAME	=	philo
 
 #comands
 CC	=	cc
-DFLAGS	=	-g 
 CFLAGS	=	-Wall -Wextra -Werror
 RM		=	rm -rf
 

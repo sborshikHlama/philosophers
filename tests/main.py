@@ -27,7 +27,7 @@ class TestPhilosophers(unittest.TestCase):
         """Runs the philo program with given arguments and captures output live."""
         try:
             process = subprocess.Popen(
-                ["../philo"] + args,
+                ["../philo/./philo"] + args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
