@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:01:52 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/24 09:12:26 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/24 10:30:08 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ void	*philosopher(void *data)
 	{
 		if (get_int(&philo->philo_mutex, &philo->full))
 			break ;
-		pthread_mutex_unlock(&philo->philo_mutex);
 		wrapper(eat(philo), philo->sim);
 		wrapper(write_status(SLEEPING, philo), philo->sim);
 		precise_usleep(philo->sim, philo->sim->time_to_sleep);
