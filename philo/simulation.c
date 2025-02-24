@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:01:52 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/22 12:14:49 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/24 09:12:26 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,11 @@ static	int	eat(t_philo *philo)
 	if (pthread_mutex_lock(&philo->second_fork->fork) != 0)
 		return (MUTEX_LOCK_ERROR);
 	write_status(TAKE_SECOND_FORK, philo);
-	if (pthread_mutex_lock(&philo->philo_mutex) != 0)
-		return (MUTEX_LOCK_ERROR);
-	philo->last_meal_time = gettime_ms();
-	if (pthread_mutex_unlock(&philo->philo_mutex) != 0)
-		return (MUTEX_LOCK_ERROR);
+	set_long(&philo->philo_mutex, &philo->last_meal_time, gettime_ms());
 	if (write_status(EATING, philo) == MUTEX_WRITE_ERROR)
 		return (MUTEX_WRITE_ERROR);
 	precise_usleep(philo->sim, philo->sim->time_to_eat);
-	increase_long(&philo->philo_mutex, &philo->meals_counter);
+	increase_int(&philo->philo_mutex, &philo->meals_counter);
 	if (philo->meals_counter == philo->sim->meals_to_eat)
 		set_int(&philo->philo_mutex, &philo->full, 1);
 	if (pthread_mutex_unlock(&philo->first_fork->fork) != 0)
@@ -96,9 +92,7 @@ void	*philosopher(void *data)
 		return (NULL);
 	wrapper(increase_int(&philo->sim->sim_mutex,
 			&philo->sim->threads_running_num), philo->sim);
-	pthread_mutex_lock(&philo->philo_mutex);
-	philo->last_meal_time = gettime_ms();
-	pthread_mutex_unlock(&philo->philo_mutex);
+	set_long(&philo->philo_mutex, &philo->last_meal_time, gettime_ms());
 	wait_all_threads(philo->sim);
 	if (philo->sim->philo_num == 1)
 		return (wrapper(lone_philo(philo), philo->sim));
@@ -106,8 +100,9 @@ void	*philosopher(void *data)
 		wrapper(think(philo, 1), philo->sim);
 	while (!simulation_finished(philo->sim))
 	{
-		if (philo->full)
+		if (get_int(&philo->philo_mutex, &philo->full))
 			break ;
+		pthread_mutex_unlock(&philo->philo_mutex);
 		wrapper(eat(philo), philo->sim);
 		wrapper(write_status(SLEEPING, philo), philo->sim);
 		precise_usleep(philo->sim, philo->sim->time_to_sleep);

@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:04:17 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/22 10:53:05 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/24 08:13:14 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	parse_input(t_simulation	*sim, char **argv)
 	if (argv[5])
 	{
 		sim->meals_to_eat = ft_atol(argv[5]);
-		if (sim->meals_to_eat < 0)
+		if (sim->meals_to_eat <= 0)
 			return (0);
 	}
 	else

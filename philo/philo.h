@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:02:04 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/22 11:34:11 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/24 08:44:09 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef struct s_fork
 typedef struct s_philo
 {
 	int				id;
-	long			meals_counter;
+	int				meals_counter;
 	time_t			last_meal_time;
 	t_fork			*first_fork;
 	t_fork			*second_fork;

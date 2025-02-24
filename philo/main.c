@@ -89,8 +89,8 @@ int	handle_error(t_error_status status)
 
 int	main(int argc, char **argv)
 {
-	t_simulation		sim = {0};
-	
+	t_simulation		sim;
+
 	if (argc == 5 || argc == 6)
 	{
 		if (parse_input(&sim, argv) != SUCCESS)

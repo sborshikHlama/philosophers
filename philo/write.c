@@ -6,7 +6,7 @@
 /*   By: aevstign <aevstign@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/07 13:40:49 by aevstign          #+#    #+#             */
-/*   Updated: 2025/02/22 00:21:13 by aevstign         ###   ########.fr       */
+/*   Updated: 2025/02/24 08:47:46 by aevstign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	write_status(t_philo_status status, t_philo *philo)
 
 	elapsed = gettime_ms() - philo->sim->start_simulation;
 	if (philo->full)
-		return (1);
+		return (SUCCESS);
 	if (pthread_mutex_lock(&philo->sim->write_mutex) != 0)
 		return (MUTEX_LOCK_ERROR);
 	else
